@@ -44,6 +44,11 @@
 			</version>
 		</dependency>
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180130</version>
+		</dependency>
+		<dependency>
 			<groupId>
 				org.cloudfoundry
 			</groupId>
@@ -87,6 +92,11 @@
 			<version>
 				2.5.0.BUILD-SNAPSHOT
 			</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson.version}</version>
 		</dependency>
 	</dependencies>
 	<properties>
