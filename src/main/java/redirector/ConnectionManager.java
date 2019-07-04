@@ -30,7 +30,15 @@ public class ConnectionManager {
         String connProxyHost = env.connectivityOnPremProxyHost;
         int connProxyPort = Integer.parseInt(env.connectivityOnPremProxyPort);
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(connProxyHost, connProxyPort));
-        URL sysUrl = new URL(destination.getURL());
+        String sysURLString = "";
+        if(!destination.getSysClient().isEmpty()){
+            String sysClient = destination.getSysClient();
+            sysURLString = destination.getURL();
+            sysURLString = sysURLString + "?sap-client="+sysClient;
+        }else{
+            sysURLString = destination.getURL();
+        }
+        URL sysUrl = new URL(sysURLString);
         URLConnection urlConnection = sysUrl.openConnection(proxy);
         urlConnection.setRequestProperty("Proxy-Authorization", "Bearer " + authManager.getConnectionAuthToken());
         // Basic authentication to backend system
