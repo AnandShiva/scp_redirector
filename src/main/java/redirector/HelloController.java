@@ -2,6 +2,7 @@ package redirector;
 
 import redirector.auth.*;
 import redirector.model.Destination;
+import redirector.model.RedirectRequestDTO;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,7 +11,10 @@ import java.net.URISyntaxException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestController
 public class HelloController {
@@ -39,13 +43,15 @@ public class HelloController {
         return destinations;
     }
 
-    @RequestMapping("/redirect/{destinationName}")
-    public String proxyRequest(@PathVariable("destinationName") String destinationName) {
+    @RequestMapping(value="/redirect",method = RequestMethod.POST)
+    public @ResponseBody String proxyRequest(RedirectRequestDTO redirectRequest){
+        String destinationName = redirectRequest.getDestinationName();
+        String subPath = redirectRequest.getSubPath();
         String responseData = "";
         try {
             destManager.getDestinations();
             Destination connectionSystem = destManager.getDestinationbyName(destinationName);
-            responseData = connManager.proxyAndFetchData(connectionSystem);
+            responseData = connManager.proxyAndFetchData(connectionSystem,subPath);
         } catch (IOException | URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

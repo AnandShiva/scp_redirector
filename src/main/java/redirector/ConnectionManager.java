@@ -25,19 +25,22 @@ public class ConnectionManager {
     @Autowired
     EnvironmentVariables env;
 
-    public String proxyAndFetchData(Destination destination) throws IOException, URISyntaxException {
+    public String proxyAndFetchData(Destination destination, String subPath) throws IOException, URISyntaxException {
 
         String connProxyHost = env.connectivityOnPremProxyHost;
         int connProxyPort = Integer.parseInt(env.connectivityOnPremProxyPort);
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(connProxyHost, connProxyPort));
-        String sysURLString = "";
-        if(!destination.getSysClient().isEmpty()){
+        String sysURLString = destination.getURL() + subPath;
+        if ((destination.getSysClient() != null) && (!destination.getSysClient().isEmpty())) {
             String sysClient = destination.getSysClient();
-            sysURLString = destination.getURL();
-            sysURLString = sysURLString + "?sap-client="+sysClient;
-        }else{
-            sysURLString = destination.getURL();
+            if (sysClient.contains("?")) {
+                sysURLString = sysURLString + "&sap-client=" + sysClient;
+            } else {
+                sysURLString = sysURLString + "?sap-client=" + sysClient;
+            }
         }
+        System.out.println("*************LOG************ - onpremConectionURL -" + sysURLString + destination.getUser()
+                + destination.getPassword());
         URL sysUrl = new URL(sysURLString);
         URLConnection urlConnection = sysUrl.openConnection(proxy);
         urlConnection.setRequestProperty("Proxy-Authorization", "Bearer " + authManager.getConnectionAuthToken());
@@ -45,7 +48,7 @@ public class ConnectionManager {
         String credentials = MessageFormat.format("{0}:{1}", destination.getUser(), destination.getPassword());
         byte[] encodedBytes = Base64.getEncoder().encode(credentials.getBytes());
         urlConnection.setRequestProperty("Authorization", "Basic " + new String(encodedBytes));
-        urlConnection.setRequestProperty("X-CSRF-Token", "Fetch");
+        // urlConnection.setRequestProperty("X-CSRF-Token", "Fetch");
         BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
         String inputLine;
         StringBuffer content = new StringBuffer();

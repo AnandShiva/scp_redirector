@@ -1,6 +1,9 @@
 ---
-applications:
-  - name: scp_redirector
-    buildpacks: 
-      - java_buildpack
-    path: target/ssb.scp.viewbrowser-0.1.0.jar
+applications: 
+ - name: scp_redirector
+   path: target/ssb.scp.viewbrowser-0.1.0.jar
+   buildpack: java_buildpack
+   services:
+    - xsuaa-demo
+    - connectivity-demo-lite
+    - destination-demo-lite
