@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,11 +26,10 @@ public class HelloController {
     ConnectionManager connManager;
 
     @RequestMapping("/destinations")
-    public String getDestinations() {
+    public @ResponseBody String getDestinations() {
         String destinations = "";
         try {
             destinations = destManager.getDestinations();
-            destinations = "List of destinations ! " + authManager.getDestinationAuthToken() + "\n" + destinations;
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -43,15 +40,15 @@ public class HelloController {
         return destinations;
     }
 
-    @RequestMapping(value="/redirect",method = RequestMethod.POST)
-    public @ResponseBody String proxyRequest(RedirectRequestDTO redirectRequest){
+    @RequestMapping(value = "/redirect", method = RequestMethod.POST)
+    public @ResponseBody String proxyRequest(RedirectRequestDTO redirectRequest) {
         String destinationName = redirectRequest.getDestinationName();
         String subPath = redirectRequest.getSubPath();
         String responseData = "";
         try {
             destManager.getDestinations();
             Destination connectionSystem = destManager.getDestinationbyName(destinationName);
-            responseData = connManager.proxyAndFetchData(connectionSystem,subPath);
+            responseData = connManager.proxyAndFetchData(connectionSystem, subPath);
         } catch (IOException | URISyntaxException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
